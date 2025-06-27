@@ -14,7 +14,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 #Specify the location of the Tools folder
 CodeDR=r"C:\Users\WORKSTATION\Desktop\HamzaCode\HKCodeKDVLab"
 #Specify where the data is and where plots will be saved
-dataDR=r"F:\DualAngles2\Exp15"
+dataDR=r"F:\ThinnerFilms\Exp2"
 
 
 os.chdir(CodeDR) #Set  current working direcotry to the code directory
@@ -48,14 +48,25 @@ os.chdir(dataDR)
 #Maybe just provide image series and index of extrema
 
 #get the folder names and a place to store the droplet properties
-folderpaths, foldernames, dropProp = ito.foldergen(os.getcwd())
+
+#Time Series
+def tsplitter(s):
+	def splt2(x):
+		return ito.split_at(x,c='e')
+	return ito.namevelfind(s, splitfunction=splt2,numLoc=-1) 
+
+#Velocity Series
+def vsplitter(s):
+	return ito.namevelfind(s, numLoc=0) 
+
+folderpaths, foldernames, dropProp = ito.foldergen(os.getcwd(),splitfunc=vsplitter)
 
 
 noforce=ito.imread2(dataDR+'\\base.tif') #Need a no force image to compare rest of results to
 
 #User cropping etc
 #Get the images that will be used
-cropselectfolder='10p0ums1'
+cropselectfolder='10p0ums2'
 cropindices=[41,150]
 #importimage
 extremapath = ito.getimpath(cropselectfolder)
@@ -116,7 +127,7 @@ sidebackground=False
 sidethreshtest=ede.edgedetector(croppedsidechecks[0],sidebackground,*sideimaparam)
 
 #Top Edge detection
-topimaparam=[-1*np.max(croppedtopchecks[0])/1.7,60,.05] #[threshval,obsSize,cannysigma]
+topimaparam=[-1*np.max(croppedtopchecks[0])/1.7,40,.05] #[threshval,obsSize,cannysigma]
 topbackground=False 
 
 topthreshtest=ede.edgedetector(croppedtopchecks[0],topbackground,*topimaparam)
@@ -195,7 +206,7 @@ for i in range(len(folderpaths)):
 	ttake = time.time()-t1
 	print("%s completed in %d seconds." % (folderpaths[i], ttake))
 
-
+#%%
 '''
 This code no longer involves the images and can run much faster
 Also has bits that are most commonly changed (ie fitting functions etc)
@@ -256,6 +267,6 @@ for i in range(len(speedvals)):
 	
 
 ito.savelistnp('MainDropParams.npy',[foldernames,speedvals,dropProp])
-#%%
+☻#%%
 sidestackedges = ito.openlistnp(folderpaths[0]+'sideedgedata.npy')
 plt.plot(sidestackedges[0][:,0],sidestackedges[0][:,1],'.')

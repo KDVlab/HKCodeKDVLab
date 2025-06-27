@@ -13,7 +13,7 @@ import numpy_indexed as npi
 #Specify the location of the Tools folder
 CodeDR=r"C:\Users\WORKSTATION\Desktop\HamzaCode\HKCodeKDVLab"
 #Specify where the data is and where plots will be saved
-dataDR=r"F:\DualAngles2\Exp2"
+dataDR=r"F:\ThinnerFilms\Exp3"
 
 
 os.chdir(CodeDR) #Set  current working direcotry to the code directory
@@ -53,21 +53,22 @@ del(dropProp[6])
 indexArrs = [None]*len(velvals) #Empty list to store the plateau indices
 exparams = np.genfromtxt('runinfo.csv', dtype=float, delimiter=',', names=True) 
 
-springc = 0.024 #N/m
-mperpix = 0.224e-6 #meters per pixel
+#springc = 0.024 #N/m
+#sidemperpix = 0.224e-6 #meters per pixel
+#topmperpix = 0.448e-6 #meters per pixel
 
 '''
 want array of force, average angles, perimeter and area as final result
 want where the indexes that are used for the averaging
 '''
-fshift = np.mean(dropProp[0][2])
+fshift = np.mean(dropProp[0][2])-35
 meanF = np.zeros(len(velvals))
 meanPerim = np.zeros(len(velvals))
 smoothedforces=[None]*(len(velvals))
 for i in range(len(velvals)):
 	#print(i)
 	tVals = dropProp[i][0]
-	forceDat=dropProp[i][2]-fshift
+	forceDat=dropProp[i][2]-np.mean(dropProp[i][2])
 	perimDat=dropProp[i][-2]
 	forceplateaudata=planl.plateaufilter(tVals,forceDat,[0,tVals[-1]],smoothparams=[5],sdevlims=[.1,.5],outlierparam=1)	
 	topidx, botidx = forceplateaudata[-1]
@@ -81,14 +82,14 @@ for i in range(len(velvals)):
 
 
 
-testidx=-1
+testidx=1
 tVals = dropProp[testidx][0]
 forceDat=dropProp[testidx][2]-fshift
 topidx, botidx = indexArrs[testidx]
 plt.plot(tVals,forceDat,'k.')
 plt.plot(tVals[topidx],forceDat[topidx],'r.')
 plt.plot(tVals[botidx],forceDat[botidx],'r.')
-
+'''
 testidx=0
 tVals = dropProp[testidx][0]
 forceDat=dropProp[testidx][2]-fshift
@@ -96,7 +97,8 @@ topidx, botidx = indexArrs[testidx]
 plt.plot(tVals,forceDat,'k.')
 plt.plot(tVals[topidx],forceDat[topidx],'r.')
 plt.plot(tVals[botidx],forceDat[botidx],'r.')
-
+'''
+#%%
 
 #%%
 def grouper(x,y):
@@ -112,8 +114,8 @@ forcecombo = grouper(velvals,meanF)
 perimcombo = grouper(velvals,meanPerim)
 normforcecombo = grouper(velvals,meanF/meanPerim)
 
-def velfit(x,B,a):
-	return B*x**a
+def velfit(x,B):
+	return B*x**.26
 samplex=np.linspace(0,np.max(velvals),100)
 pfit,perr = curve_fit(velfit,normforcecombo[0][0],normforcecombo[0][1],sigma=normforcecombo[1][1])
 

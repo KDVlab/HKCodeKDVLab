@@ -1,25 +1,18 @@
 '''
-This code performs the edge location and cross correlation analysis across multiple images
+This code gets a quick sequence of images
 '''
 
 import sys, os, glob, pickle, re
-import matplotlib.pyplot as plt
 import numpy as np
 import importlib
-from scipy.optimize import curve_fit
-import matplotlib.colors as mcolors
-import matplotlib.gridspec as gridspec
-from scipy.signal import savgol_filter
-from matplotlib_scalebar.scalebar import ScaleBar
-#import similaritymeasures
 import time
 #%%
 #Specify the location of the Tools folder
 CodeDR=r"C:\Users\WORKSTATION\Desktop\HamzaCode\HKCodeKDVLab"
 #Specify where the data is and where plots will be saved
-dataDR=r"F:\liquid"
+dataDR=r"F:\PDMSMigration\Tinydrops"
 
-
+²
 os.chdir(CodeDR) #Set  current working direcotry to the code directory
 
 
@@ -37,13 +30,12 @@ sys.path.remove('./Tools') #Remove tools from path
 os.chdir(dataDR)
 #%%
 
-numFrames=200
-framespersec=20
-
+numFrames=300
+framespersec=.005
 
 secperframe = 1/framespersec
 #Open the camera and controller
 cam=cseq.BCamCap(2,secperframe)
 
-cam.grabFastSequence(int(numFrames),"dualdroplets7")
+cam.grabFastSequence(int(numFrames),"dualdroplets41")
 
